@@ -9,12 +9,17 @@
     "LivingEntityAccessor",
     "MixinBellBlock",
     "MixinEntity",
-    "MixinLivingEntity",
     "MixinEntityPredicate",
-    "MixinPotionBrewing"
+    "MixinLivingEntity",
+    "MixinPlayerEntity",
+    "MixinPotionBrewing",
+    "client.MixinEntityRendererManager"
   ],
   "client": [
-    "AgeableModelAccessor"
+    "client.AgeableModelAccessor",
+    "client.LivingRendererAccessor",
+    "client.MixinAgeableModel",
+    "client.MixinRenderType"
   ],
   "injectors": {
     "defaultRequire": 1

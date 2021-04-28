@@ -6,11 +6,9 @@ import de.teamlapen.vampirism.api.entity.IExtendedCreatureVampirism;
 import de.teamlapen.vampirism.api.items.IItemWithTier;
 import de.teamlapen.vampirism.config.VampirismConfig;
 import de.teamlapen.vampirism.core.ModRefinements;
-import de.teamlapen.vampirism.core.ModRefinements;
 import de.teamlapen.vampirism.entity.ExtendedCreature;
 import de.teamlapen.vampirism.items.HunterCoatItem;
 import de.teamlapen.vampirism.player.hunter.HunterPlayer;
-import de.teamlapen.vampirism.player.hunter.HunterPlayerSpecialAttribute;
 import de.teamlapen.vampirism.player.vampire.VampirePlayer;
 import de.teamlapen.vampirism.player.vampire.actions.VampireActions;
 import de.teamlapen.vampirism.tileentity.TotemHelper;
@@ -92,6 +90,9 @@ public class RenderHandler implements ISelectiveResourceReloadListener {
     @Nullable
     private Shader blur1, blur2, blit0;
     private boolean isInsideBloodVisionRendering = false;
+
+    public static boolean renderPlayerTransparent = false;
+    public static float playerTransparency = 1;
 
     public RenderHandler(@Nonnull Minecraft mc) {
         this.mc = mc;
@@ -259,18 +260,30 @@ public class RenderHandler implements ISelectiveResourceReloadListener {
     @SubscribeEvent
     public void onRenderLivingPre(RenderLivingEvent.Pre<PlayerEntity, PlayerModel<PlayerEntity>> event) {
         LivingEntity entity = event.getEntity();
-        if (entity instanceof PlayerEntity && HunterPlayer.getOpt((PlayerEntity) entity).map(HunterPlayer::getSpecialAttributes).map(HunterPlayerSpecialAttribute::isDisguised).orElse(false)) {
-            double dist = this.mc.player == null ? 0 : entity.getDistanceSq(this.mc.player);
-            if (dist > 64) {
-                event.setCanceled(true);
-            }
-            else if(dist>16){
+        if (entity instanceof PlayerEntity) {
+            float visibility = 1f;
+            if (HunterPlayer.getOpt((PlayerEntity) entity).map(HunterPlayer::getSpecialAttributes).map(s -> s.getDisguiseProgress() > 0f).orElse(false)) {
+                double dist = this.mc.player == null ? 0 : entity.getDistanceSq(this.mc.player);
                 IItemWithTier.TIER hunterCoatTier = HunterCoatItem.isFullyEquipped((PlayerEntity) entity);
-                if(hunterCoatTier== IItemWithTier.TIER.ENHANCED||hunterCoatTier == IItemWithTier.TIER.ULTIMATE){
+                boolean enhanced = hunterCoatTier == IItemWithTier.TIER.ENHANCED || hunterCoatTier == IItemWithTier.TIER.ULTIMATE;
+                visibility = (float) (1f - dist / (enhanced ? 16f : 64f));
+                if (visibility <= 0) {
                     event.setCanceled(true);
+                    return;
+                }
+                visibility = 1 - ((1 - visibility) * (HunterPlayer.get(((PlayerEntity) entity)).getSpecialAttributes().getDisguiseProgress()));
+                if (visibility < 1f) {
+                    renderPlayerTransparent = true;
+                    playerTransparency = visibility;
                 }
             }
+
         }
+    }
+
+    @SubscribeEvent
+    public void onRenderLivingPost(RenderLivingEvent.Pre<PlayerEntity, PlayerModel<PlayerEntity>> event) {
+        renderPlayerTransparent = false;
     }
 
     @SubscribeEvent
