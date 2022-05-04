@@ -28,11 +28,6 @@ public class Oil extends ForgeRegistryEntry<IOil> implements IOil {
     }
 
     @Override
-    public boolean canBeAppliedTo(ItemStack stack) {
-        return false;
-    }
-
-    @Override
     public int getMaxDuration(ItemStack stack) {
         return 0;
     }

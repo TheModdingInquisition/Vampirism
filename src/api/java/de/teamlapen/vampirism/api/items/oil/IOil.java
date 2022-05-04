@@ -25,7 +25,5 @@ public interface IOil extends IForgeRegistryEntry<IOil> {
 
     void getDescription(ItemStack stack, List<ITextComponent> tooltips);
 
-    boolean canBeAppliedTo(ItemStack stack);
-
     int getColor();
 }
