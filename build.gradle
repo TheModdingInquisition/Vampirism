@@ -1,7 +1,7 @@
 buildscript {
     repositories {
-        mavenCentral()
-        maven {
+        mavenCentral()  
+        maven {  
             name = "forge"
             url = "https://files.minecraftforge.net/maven"
         }
@@ -21,7 +21,7 @@ plugins {
     id 'de.undercouch.download' version '3.3.0'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'net.minecraftforge.gradle' 
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'org.spongepowered.mixin'
@@ -30,7 +30,7 @@ apply plugin: 'org.spongepowered.mixin'
 configurations {
     optionalRuntime
     runtime.extendsFrom optionalRuntime // optionalRuntime dependencies are downloaded but not exported to POM
-}
+} 
 
 group = "de.teamlapen.vampirism"
 archivesBaseName = "Vampirism"
